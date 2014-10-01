@@ -33,6 +33,7 @@ import android.content.ServiceConnection;
 import android.os.Build;
 import android.os.Bundle;
 import android.os.IBinder;
+import android.preference.PreferenceManager;
 import android.util.Log;
 import android.view.Menu;
 import android.view.MenuInflater;
@@ -222,7 +223,7 @@ public class TincActivity extends Activity implements ICallback
             else
             {
                 // Start tincd service
-                Intent intent = new Intent(this,TincdService.class); 
+                Intent intent = new Intent(this,TincdService.class).setAction("org.poirsouille.tinc_gui.TincdService.START"); 
                 startService(intent);
             }
         }
@@ -263,6 +264,8 @@ public class TincActivity extends Activity implements ICallback
     
     private void updateLog(String iData)
     {
+    	_logTextView.setTextSize(getLogFontSize());
+
         if (_service != null)
         {
             List<String> aTempOut = _service.popOutput();
@@ -343,5 +346,19 @@ public class TincActivity extends Activity implements ICallback
             }
         });
     }
+    
+   /**
+    * Get font size for log window
+    * clamp it to a suitable range (8 -100)
+    * @return
+    */
+    public Integer getLogFontSize()
+    {
+        int aLogFontSize = Integer.parseInt(PreferenceManager.getDefaultSharedPreferences(this).getString("pref_key_font_size_log", "" + 8));
+
+        return Math.max(8, Math.min(100, aLogFontSize));
+    }
+
+
 }
 
